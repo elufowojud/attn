@@ -11,9 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
+          DOW=$(date -u +%u)   # 1 = Monday ... 7 = Sunday
+          if [ "$DOW" -ge 6 ]; then
+            if [ $((RANDOM % 10)) -lt 6 ]; then N=0; else N=$((RANDOM % 3 + 1)); fi
+          else
+            N=$((RANDOM % 6))
+          fi
+          echo "Making $N commits today"
+          if [ "$N" -eq 0 ]; then exit 0; fi
           git config user.name "elufowojud"
           git config user.email "129525728+elufowojud@users.noreply.github.com"
-          date -u >> log.txt
-          git add log.txt
-          git commit -m "Daily update"
+          for i in $(seq 1 $N); do
+            date -u >> log.txt
+            git add log.txt
+            git commit -m "Daily update $i"
+          done
           git push
